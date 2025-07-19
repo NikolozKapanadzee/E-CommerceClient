@@ -1,13 +1,9 @@
-import Footer from "./components/Footer";
-import Header from "./components/Header";
-import Hero from "./components/Hero";
+import MainPage from "./components/MainPage";
 
 export default function Home() {
   return (
     <div>
-      <Header />
-      <Hero />
-      <Footer />
+      <MainPage />
     </div>
   );
 }

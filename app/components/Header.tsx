@@ -2,10 +2,14 @@
 import { ShoppingCart, User, Menu } from "lucide-react";
 import { useState } from "react";
 import { Button } from "../ui/Button";
+import { useRouter } from "next/navigation";
 
 const Header = () => {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
-
+  const router = useRouter();
+  const handleUserClick = () => {
+    router.push("/auth/signUp");
+  };
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 lg:px-8">
@@ -47,7 +51,7 @@ const Header = () => {
             </a>
           </nav>
           <div className="flex items-center space-x-2">
-            <Button>
+            <Button onClick={handleUserClick}>
               <User className="h-5 w-5" />
             </Button>
             <Button className="relative">
