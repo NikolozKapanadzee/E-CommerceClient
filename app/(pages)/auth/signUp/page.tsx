@@ -14,18 +14,16 @@ type SignUpFormData = {
   email: string;
   password: string;
 };
-
 export default function Signup() {
   const router = useRouter();
-
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<SignUpFormData>({
     resolver: yupResolver(signUpSchema),
   });
-
   const onSubmit = async (data: SignUpFormData) => {
     try {
       const response = await axiosInstance.post("/auth/sign-up", data);
@@ -33,16 +31,19 @@ export default function Signup() {
       localStorage.setItem("email", data.email);
       router.push("/auth/otpCode");
     } catch (error: any) {
-      console.error("Signup failed:", error.response?.data || error.message);
       const errorMessage =
         error.response?.data?.message ||
-        (typeof error.response?.data === "string" ? error.response.data : "") ||
         error.message ||
         "Signup failed. Please try again.";
-      console.error("Signup failed:", errorMessage);
+      if (process.env.NODE_ENV === "development") {
+        console.error("Signup failed:", errorMessage);
+      }
+      setError("root", {
+        type: "manual",
+        message: errorMessage,
+      });
     }
   };
-
   return (
     <div className="bg-[#e5e7eb] min-h-screen flex items-center justify-center p-4">
       <form
@@ -81,6 +82,9 @@ export default function Signup() {
               </p>
             )}
           </div>
+          {errors.root && (
+            <p className="text-red-500 text-sm mt-1">{errors.root.message}</p>
+          )}
           <Button type="submit" className="w-full">
             Sign Up
           </Button>
