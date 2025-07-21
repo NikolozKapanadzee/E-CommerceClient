@@ -9,23 +9,20 @@ import { Label } from "@/app/ui/Label";
 import Link from "next/link";
 import { axiosInstance } from "../../../lib/axiosInstance";
 import { useRouter } from "next/navigation";
-
 type SignInFormData = {
   email: string;
   password: string;
 };
-
 export default function Signin() {
   const router = useRouter();
-
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<SignInFormData>({
     resolver: yupResolver(signInSchema),
   });
-
   const onSubmit = async (data: SignInFormData) => {
     try {
       const response = await axiosInstance.post("/auth/sign-in", data);
@@ -35,9 +32,7 @@ export default function Signin() {
       }
       router.push("/");
     } catch (error: any) {
-      console.error("Signin failed:", error);
       let errorMessage = "Signin failed. Please try again.";
-
       if (error.response?.data) {
         if (typeof error.response.data === "string") {
           errorMessage = error.response.data;
@@ -47,7 +42,11 @@ export default function Signin() {
       } else if (error.message) {
         errorMessage = error.message;
       }
-      console.error("Error message:", errorMessage);
+      console.error("Signin failed:", errorMessage);
+      setError("root", {
+        type: "manual",
+        message: errorMessage,
+      });
     }
   };
   return (
@@ -88,6 +87,9 @@ export default function Signin() {
               </p>
             )}
           </div>
+          {errors.root && (
+            <p className="text-red-500 text-sm mt-1">{errors.root.message}</p>
+          )}
           <Button type="submit" className="w-full">
             Sign In
           </Button>
