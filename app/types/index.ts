@@ -6,3 +6,16 @@ export interface Product {
   category: string;
   description: string;
 }
+export interface CartItem {
+  product: Product;
+  quantity: number;
+}
+
+export interface CartContextType {
+  items: CartItem[];
+  totalQuantity: number;
+  addToCart: (product: Product) => void;
+  removeFromCart: (productId: string) => void;
+  incrementQuantity: (productId: string) => void;
+  decrementQuantity: (productId: string) => void;
+}

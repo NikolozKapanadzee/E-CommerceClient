@@ -3,6 +3,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import Card from "./Card";
 import { axiosInstance } from "../lib/axiosInstance";
 import { Product } from "../types/index";
+import { useCart } from "../context/CartContext";
 interface BackendProduct {
   _id: string;
   itemName: string;
@@ -13,6 +14,7 @@ interface BackendProduct {
 }
 const S3_BASE_URL = process.env.NEXT_PUBLIC_S3_BASE_URL || "";
 const Content: React.FC = () => {
+  const { addToCart } = useCart();
   const [products, setProducts] = useState<Product[]>([]);
   const [visibleProducts, setVisibleProducts] = useState(8);
   const [loading, setLoading] = useState(false);
@@ -48,9 +50,9 @@ const Content: React.FC = () => {
     fetchProducts();
   }, []);
 
-  const handleAddToCart = useCallback((product: Product) => {
-    console.log("Added to cart:", product);
-  }, []);
+  const handleAddToCart = (product: Product) => {
+    addToCart(product);
+  };
 
   const handleLoadMore = useCallback(() => {
     setVisibleProducts((prev) => prev + 8);
