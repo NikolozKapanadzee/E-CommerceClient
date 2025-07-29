@@ -9,10 +9,19 @@ import { Label } from "@/app/ui/Label";
 import Link from "next/link";
 import { axiosInstance } from "../../../lib/axiosInstance";
 import { useRouter } from "next/navigation";
+import { jwtDecode } from "jwt-decode";
+
 type SignInFormData = {
   email: string;
   password: string;
 };
+
+type DecodedToken = {
+  role: string;
+  exp: number;
+  [key: string]: any;
+};
+
 export default function Signin() {
   const router = useRouter();
   const {
@@ -27,9 +36,15 @@ export default function Signin() {
     try {
       const response = await axiosInstance.post("/auth/sign-in", data);
       console.log("Signin successful:", response.data);
+
       if (response.data.token) {
         localStorage.setItem("token", response.data.token);
+        const decoded: DecodedToken = jwtDecode(response.data.token);
+        if (decoded.role) {
+          localStorage.setItem("role", decoded.role);
+        }
       }
+
       router.push("/");
     } catch (error: any) {
       let errorMessage = "Signin failed. Please try again.";
@@ -49,6 +64,7 @@ export default function Signin() {
       });
     }
   };
+
   return (
     <div className="bg-[#e5e7eb] min-h-screen flex items-center justify-center p-4">
       <form
