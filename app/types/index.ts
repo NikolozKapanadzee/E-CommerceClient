@@ -19,3 +19,19 @@ export interface CartContextType {
   incrementQuantity: (productId: string) => void;
   decrementQuantity: (productId: string) => void;
 }
+
+export interface ProductFormData {
+  title: string;
+  description: string;
+  price: string;
+  img: string;
+  category: string;
+}
+export interface ValidationErrors {
+  title?: string;
+  description?: string;
+  price?: string;
+  img?: string;
+  category?: string;
+  [key: string]: string | undefined;
+}
