@@ -21,17 +21,17 @@ export interface CartContextType {
 }
 
 export interface ProductFormData {
-  title: string;
+  itemName: string;
   description: string;
   price: string;
-  img: string;
   category: string;
+  img: File | null;
 }
 export interface ValidationErrors {
-  title?: string;
+  itemName?: string;
   description?: string;
   price?: string;
-  img?: string;
   category?: string;
+  img?: string;
   [key: string]: string | undefined;
 }
