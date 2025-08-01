@@ -14,7 +14,9 @@ interface BackendProduct {
   description: string;
 }
 
-const S3_BASE_URL = process.env.NEXT_PUBLIC_S3_BASE_URL || "";
+const rawBase = process.env.NEXT_PUBLIC_S3_BASE_URL || "";
+const S3_BASE_URL = rawBase.trim().replace(/\/+$/, "");
+
 console.log("=== DEBUG INFO ===");
 console.log("S3_BASE_URL:", S3_BASE_URL);
 console.log("Environment:", process.env.NODE_ENV);
@@ -33,7 +35,6 @@ const Content: React.FC = () => {
       ? imagePath.slice(1)
       : imagePath;
     const baseUrl = S3_BASE_URL.endsWith("/") ? S3_BASE_URL : `${S3_BASE_URL}/`;
-
     return `${baseUrl}${cleanImagePath}`;
   };
 
