@@ -15,6 +15,9 @@ interface BackendProduct {
 }
 
 const S3_BASE_URL = process.env.NEXT_PUBLIC_S3_BASE_URL || "";
+console.log("=== DEBUG INFO ===");
+console.log("S3_BASE_URL:", S3_BASE_URL);
+console.log("Environment:", process.env.NODE_ENV);
 
 const Content: React.FC = () => {
   const { addToCart } = useCart();
@@ -44,16 +47,22 @@ const Content: React.FC = () => {
         if (!S3_BASE_URL) {
           console.warn("S3_BASE_URL is not set. Image URLs may be invalid.");
         }
-        const mappedProducts: Product[] = res.data.map((product) => ({
-          id: product._id,
-          title: product.itemName,
-          price: product.price,
-          img: product.img[0]
+        const mappedProducts: Product[] = res.data.map((product) => {
+          console.log("Raw backend img path:", product.img[0]);
+          const constructed = product.img[0]
             ? constructImageUrl(product.img[0])
-            : "/fallback-image.jpg",
-          category: product.category,
-          description: product.description,
-        }));
+            : "/fallback-image.jpg";
+          console.log("Constructed image URL:", constructed);
+          return {
+            id: product._id,
+            title: product.itemName,
+            price: product.price,
+            img: constructed,
+            category: product.category,
+            description: product.description,
+          } as Product;
+        });
+
         console.log("Mapped products with image URLs:", mappedProducts);
         setProducts(mappedProducts);
       } catch (error) {
