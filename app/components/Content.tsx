@@ -4,6 +4,7 @@ import Card from "./Card";
 import { axiosInstance } from "../lib/axiosInstance";
 import { Product } from "../types/index";
 import { useCart } from "../context/CartContext";
+
 interface BackendProduct {
   _id: string;
   itemName: string;
@@ -12,19 +13,34 @@ interface BackendProduct {
   category: string;
   description: string;
 }
+
 const S3_BASE_URL = process.env.NEXT_PUBLIC_S3_BASE_URL || "";
+
 const Content: React.FC = () => {
   const { addToCart } = useCart();
   const [products, setProducts] = useState<Product[]>([]);
   const [visibleProducts, setVisibleProducts] = useState(8);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const constructImageUrl = (imagePath: string): string => {
+    if (!imagePath) return "/fallback-image.jpg";
+    if (imagePath.startsWith("http")) return imagePath;
+    const cleanImagePath = imagePath.startsWith("/")
+      ? imagePath.slice(1)
+      : imagePath;
+    const baseUrl = S3_BASE_URL.endsWith("/") ? S3_BASE_URL : `${S3_BASE_URL}/`;
+
+    return `${baseUrl}${cleanImagePath}`;
+  };
+
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
       setError(null);
       try {
         const res = await axiosInstance.get<BackendProduct[]>("products");
+
         if (!S3_BASE_URL) {
           console.warn("S3_BASE_URL is not set. Image URLs may be invalid.");
         }
@@ -33,11 +49,12 @@ const Content: React.FC = () => {
           title: product.itemName,
           price: product.price,
           img: product.img[0]
-            ? `${S3_BASE_URL}${product.img[0]}`
+            ? constructImageUrl(product.img[0])
             : "/fallback-image.jpg",
           category: product.category,
           description: product.description,
         }));
+        console.log("Mapped products with image URLs:", mappedProducts);
         setProducts(mappedProducts);
       } catch (error) {
         console.error("Failed to fetch products:", error);
@@ -46,7 +63,6 @@ const Content: React.FC = () => {
         setLoading(false);
       }
     };
-
     fetchProducts();
   }, []);
 
@@ -87,6 +103,7 @@ const Content: React.FC = () => {
           />
         ))}
       </div>
+
       {hasMoreProducts && (
         <div className="flex justify-center mt-8">
           <button
